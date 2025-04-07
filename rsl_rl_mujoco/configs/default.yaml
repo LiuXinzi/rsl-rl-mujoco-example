@@ -1,0 +1,29 @@
+env:
+  id: "HalfCheetah-v5"
+  num_envs: 4
+  clip_actions: 1.0
+  is_finite_horizon: true
+
+train:
+  num_steps_per_env: 1000
+  num_learning_iterations: 1000
+  save_interval: 50
+  empirical_normalization: false
+  
+  algorithm:
+    class_name: "PPO"
+    clip_param: 0.2
+    entropy_coef: 0.01
+    num_learning_epochs: 4
+    num_mini_batches: 4
+    learning_rate: 0.001
+    gamma: 0.99
+    lam: 0.95
+  
+  policy:
+    class_name: "ActorCritic"
+    activation: "elu"
+    hidden_dims: [64, 64]
+
+device: "cpu"
+log_dir: "./logs"
