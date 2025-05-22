@@ -1,7 +1,7 @@
 import torch
 import yaml
 import gymnasium as gym
-from rsl_rl.runners import OnPolicyRunner
+from RL.runners import OnPolicyRunner
 from stable_baselines3.common.vec_env import SubprocVecEnv
 from stable_baselines3.common.env_util import make_vec_env
 from rsl_rl_mujoco.env_wrapper import SB3RslVecEnv

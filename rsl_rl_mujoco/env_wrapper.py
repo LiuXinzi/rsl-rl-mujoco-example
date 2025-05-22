@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 import gymnasium as gym
-from rsl_rl.env.vec_env import VecEnv
+from RL.env.vec_env import VecEnv
 from stable_baselines3.common.vec_env import VecEnv as SB3VecEnv
 
 class SB3RslVecEnv(VecEnv):

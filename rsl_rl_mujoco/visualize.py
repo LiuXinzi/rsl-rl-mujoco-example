@@ -6,7 +6,7 @@ import torch
 import argparse
 import gymnasium as gym
 from pathlib import Path
-from rsl_rl.modules import ActorCritic,EmpiricalNormalization
+from RL.modules import ActorCritic,EmpiricalNormalization
 from rsl_rl_mujoco.env_wrapper_eval import GymMujocoWrapper
 from pathlib import Path
 import imageio

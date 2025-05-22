@@ -1,7 +1,7 @@
 import numpy as np
 import gymnasium as gym
 import torch
-from rsl_rl.env import VecEnv
+from RL.env import VecEnv
 
 
 class GymMujocoWrapper(VecEnv):
