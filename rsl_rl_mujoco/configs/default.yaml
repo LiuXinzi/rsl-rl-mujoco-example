@@ -1,14 +1,14 @@
 env:
   id: "MFG_MS_V7"
-  num_envs: 32
+  num_envs: 64
   is_finite_horizon: true
 
 train:
   num_steps_per_env: 256 
-  num_learning_iterations: 10000  
+  num_learning_iterations: 5000 
   empirical_normalization: true
 
-  save_interval: 50  
+  save_interval: 100  
   experiment_name: Muscle_Skeleton
   run_name: "test"
 
@@ -35,8 +35,8 @@ train:
     max_grad_norm: 1.0
 
     learning_rate: 0.0001
-    num_learning_epochs: 12
-    num_mini_batches: 8        
+    num_learning_epochs: 15
+    num_mini_batches: 12        
     schedule: adaptive        
 
   
