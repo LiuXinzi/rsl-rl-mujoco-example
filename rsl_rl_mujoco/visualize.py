@@ -6,17 +6,26 @@ import torch
 import argparse
 import gymnasium as gym
 from pathlib import Path
-from rsl_rl.modules import ActorCritic
-from rsl_rl_mujoco.env_wrapper import GymMujocoWrapper
-
+from rsl_rl.modules import ActorCritic,EmpiricalNormalization
+from rsl_rl_mujoco.env_wrapper_eval import GymMujocoWrapper
 from pathlib import Path
+import imageio
+
+gym.register(
+    id='MFG_MS_V7',
+    entry_point='Env.MFG_Musculoskelet_V7.mfgenv.mfg_env:MFG_Musculoskelet_V7',
+    max_episode_steps=1000
+)
 
 class PolicyVisualizer:
     def __init__(self, cfg_path):
         self.load_config(cfg_path)
         self.setup_environment()
-        self.load_policy()
+        
+        self.num_obs=self.env.num_obs
+        self.obs_normalizer = EmpiricalNormalization(shape=[self.num_obs], until=1.0e8).to(self.device)
 
+        self.load_policy()
     def load_config(self, cfg_path):
         """Load visualization configuration"""
         with open(cfg_path, 'r') as f:
@@ -41,9 +50,7 @@ class PolicyVisualizer:
             })
         
         # Create base environment
-        self.env = gym.make(
-            self.cfg["env"]["id"],
-            **env_kwargs
+        self.env = gym.make(self.cfg["env"]["id"], **env_kwargs
         )
         
         # Wrap for RSL-RL compatibility
@@ -56,6 +63,7 @@ class PolicyVisualizer:
         # Optional: Add video recorder wrapper
         if self.cfg["visualization"]["record_video"]:
             from gymnasium.wrappers import RecordVideo
+            # import ipdb;ipdb.set_trace()
             self.env = RecordVideo(
                 self.env,
                 self.cfg["visualization"]["video_dir"],
@@ -65,15 +73,20 @@ class PolicyVisualizer:
 
     def load_policy(self):
         """Load trained policy network"""
+        # import ipdb;ipdb.set_trace()
         self.policy = ActorCritic(
             num_actions=self.env.num_actions,
             num_actor_obs=self.env.num_obs,
             num_critic_obs=self.env.num_obs,
-            hidden_dims=self.cfg["policy"]["hidden_dims"]
+            actor_hidden_dims=self.cfg["policy"]["hidden_dims"],
+            critic_hidden_dims=self.cfg["policy"]["hidden_dims"]
         ).to(self.device)
         
         # Load checkpoint
         checkpoint = torch.load(self.cfg["policy"]["checkpoint"])
+        # import ipdb;ipdb.set_trace()
+        self.obs_normalizer.load_state_dict(checkpoint["obs_norm_state_dict"])
+        self.obs_normalizer.eval()
         self.policy.load_state_dict(checkpoint["model_state_dict"])
         self.policy.eval()
         print(f"Loaded policy from {self.cfg['policy']['checkpoint']}")
@@ -84,6 +97,7 @@ class PolicyVisualizer:
         
         for episode in range(self.cfg["visualization"]["num_episodes"]):
             obs, _ = self.env.reset()
+            obs=self.obs_normalizer(obs)
             episode_reward = 0
             done = False
             
@@ -92,6 +106,7 @@ class PolicyVisualizer:
                     actions = self.policy.act_inference(obs)
                 
                 obs, reward, done, _ = self.env.step(actions)
+                obs=self.obs_normalizer(obs)
                 episode_reward += reward.item()
                 
                 # Control playback speed
