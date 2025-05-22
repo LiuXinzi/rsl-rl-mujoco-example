@@ -54,5 +54,5 @@ train:
     # rnn_hidden_dim: 512
     # rnn_num_layers: 1
 
-device: "cpu"
+device: "cuda"
 log_dir: "./logs"
