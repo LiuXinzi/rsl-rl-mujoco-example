@@ -49,7 +49,7 @@ class ReferenceTrajectories:
             smoothing_sigma: Optional[float] = None,
             splice_overlap: int = 10,
             max_hold_steps: int = 5,
-            speed_range: Tuple[float, float] = (1.2, 1.3),
+            speed_range: Tuple[float, float] = (0, 3),
             enable_mirroring: bool = True,
             random_seed: Optional[int] = None,
             verbose: bool = False

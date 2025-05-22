@@ -11,10 +11,10 @@ from pathlib import Path
 cfg_path: str = str(Path(__file__).resolve().parent / "configs" / "default.yaml")
 with open(cfg_path, "r") as f:
         cfg = yaml.safe_load(f)
-SEED = cfg["seed"]
-torch.manual_seed(SEED)
-np.random.seed(SEED)
-random.seed(SEED)
+# SEED = cfg["seed"]
+# torch.manual_seed(SEED)
+# np.random.seed(SEED)
+# random.seed(SEED)
 
 gym.register(
     id='MFG_MS_V7',
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     env_id = cfg["env"]["id"]
     num_envs = cfg["env"].get("num_envs", 4)
     # import ipdb;ipdb.set_trace()
-    envs = make_vec_env('MFG_MS_V7', n_envs=num_envs,seed=SEED,vec_env_cls=SubprocVecEnv)
+    envs = make_vec_env('MFG_MS_V7', n_envs=num_envs,vec_env_cls=SubprocVecEnv)
     
     # envs = [gym.make(env_id) for _ in range(num_envs)]
     env = SB3RslVecEnv(
@@ -38,7 +38,6 @@ if __name__ == "__main__":
         clip_actions=cfg["env"].get("clip_actions",None),
         is_finite_horizon=cfg["env"].get("is_finite_horizon", True),
         device=cfg.get("device", "cpu"),
-        seed=SEED
     )
 
     # Initialize runner

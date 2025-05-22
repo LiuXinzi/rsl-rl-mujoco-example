@@ -42,7 +42,6 @@ class SB3RslVecEnv(VecEnv):
         )
 
         # placeholder for last observations
-        self.seed(seed=seed)
         self._obs = None
         self.reset()
 
