@@ -49,10 +49,6 @@ class WandbSummaryWriter(SummaryWriter):
         wandb.config.update({"runner_cfg": runner_cfg})
         wandb.config.update({"policy_cfg": policy_cfg})
         wandb.config.update({"alg_cfg": alg_cfg})
-        try:
-            wandb.config.update({"env_cfg": env_cfg.to_dict()})
-        except Exception:
-            wandb.config.update({"env_cfg": asdict(env_cfg)})
 
     def add_scalar(self, tag, scalar_value, global_step=None, walltime=None, new_style=False):
         super().add_scalar(
