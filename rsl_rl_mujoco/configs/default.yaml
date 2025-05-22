@@ -53,6 +53,6 @@ train:
     # rnn_type: 'lstm'
     # rnn_hidden_dim: 512
     # rnn_num_layers: 1
-
+seed: 0
 device: "cuda"
 log_dir: "./logs"

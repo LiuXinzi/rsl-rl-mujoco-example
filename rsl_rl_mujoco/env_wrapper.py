@@ -15,6 +15,7 @@ class SB3RslVecEnv(VecEnv):
         clip_actions: float = None,
         is_finite_horizon: bool = True,
         device: str = "cpu",
+        seed:int = None,
     ):
         # underlying SB3 vectorized env
         self.env = sb3_vec_env
@@ -41,6 +42,7 @@ class SB3RslVecEnv(VecEnv):
         )
 
         # placeholder for last observations
+        self.seed(seed=seed)
         self._obs = None
         self.reset()
 
