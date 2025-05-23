@@ -13,9 +13,8 @@ class SB3RslVecEnv(VecEnv):
         self,
         sb3_vec_env: SB3VecEnv,
         clip_actions: float = None,
-        is_finite_horizon: bool = True,
+        is_finite_horizon: bool = False,
         device: str = "cpu",
-        seed:int = None,
     ):
         # underlying SB3 vectorized env
         self.env = sb3_vec_env
@@ -70,7 +69,7 @@ class SB3RslVecEnv(VecEnv):
         # step through vectorized env
         out = self.env.step(actions_np)
         obs_batch, reward_batch, done_batch, info_batch = out[:4]
-
+        
         # SB3 automatically resets environments on done and populates info["terminal_observation"]
         self._obs = np.array(obs_batch)
 
@@ -81,8 +80,13 @@ class SB3RslVecEnv(VecEnv):
 
         extras = {"observations": {"policy": obs_tensor}}
         if not self.cfg.is_finite_horizon:
-            extras["time_outs"] = torch.zeros_like(dones_tensor)
-
+            truncated_flags = [
+                info.get("TimeLimit.truncated", False)
+                for info in info_batch
+            ]
+            extras["time_outs"] = torch.tensor(
+                truncated_flags, dtype=torch.bool, device=self.device
+            )
         return obs_tensor, rewards_tensor, dones_tensor, extras
 
     def close(self):
