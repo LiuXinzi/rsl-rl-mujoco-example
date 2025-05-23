@@ -19,7 +19,7 @@ with open(cfg_path, "r") as f:
 gym.register(
     id='MFG_MS_V7',
     entry_point='Env.MFG_Musculoskelet_V7.mfgenv.mfg_env:MFG_Musculoskelet_V7',
-    max_episode_steps=1000
+    max_episode_steps=800
 )
 
 if __name__ == "__main__":
@@ -36,7 +36,6 @@ if __name__ == "__main__":
     env = SB3RslVecEnv(
         envs,
         clip_actions=cfg["env"].get("clip_actions",None),
-        is_finite_horizon=cfg["env"].get("is_finite_horizon", True),
         device=cfg.get("device", "cpu"),
     )
 

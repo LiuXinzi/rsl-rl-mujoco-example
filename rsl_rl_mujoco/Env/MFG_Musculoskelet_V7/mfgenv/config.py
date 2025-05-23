@@ -99,7 +99,7 @@ def load_config(config_path: Optional[Union[str, Path]] = None, overrides: Dict[
             "torque": 1e-6,
             "action": 2.0
         },
-        "ref_traj_repeat_times": 5,
+        "ref_traj_repeat_times": 20,
         "remove_x_pos": False,
         "short_history_max_len": 2,
         "long_history_max_len": 2,
