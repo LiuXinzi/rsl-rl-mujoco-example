@@ -8,24 +8,16 @@ from stable_baselines3.common.vec_env import SubprocVecEnv
 from stable_baselines3.common.env_util import make_vec_env
 from rsl_rl_mujoco.env_wrapper import SB3RslVecEnv
 from pathlib import Path
-cfg_path: str = str(Path(__file__).resolve().parent / "configs" / "default.yaml")
-with open(cfg_path, "r") as f:
-        cfg = yaml.safe_load(f)
-# SEED = cfg["seed"]
-# torch.manual_seed(SEED)
-# np.random.seed(SEED)
-# random.seed(SEED)
-
+import hydra
+from omegaconf import DictConfig
 gym.register(
     id='MFG_MS_V7',
     entry_point='Env.MFG_Musculoskelet_V7.mfgenv.mfg_env:MFG_Musculoskelet_V7',
     max_episode_steps=800
 )
-
-if __name__ == "__main__":
-    # Load configuration
-    
-
+@hydra.main(config_path="configs", config_name="default")
+def main(cfg: DictConfig):
+    import ipdb;ipdb.set_trace()
     # Create environment
     env_id = cfg["env"]["id"]
     num_envs = cfg["env"].get("num_envs", 4)
@@ -49,3 +41,6 @@ if __name__ == "__main__":
 
     # Train
     runner.learn(num_learning_iterations=cfg["train"]["num_learning_iterations"])
+      
+if __name__ == "__main__":
+    main()
