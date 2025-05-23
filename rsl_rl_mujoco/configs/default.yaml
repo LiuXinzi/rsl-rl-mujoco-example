@@ -1,3 +1,7 @@
+hydra:
+  run:
+    dir: .
+  output_subdir: null
 env:
   id: "MFG_MS_V7"
   num_envs: 64
@@ -55,4 +59,4 @@ train:
     # rnn_num_layers: 1
 seed: 0
 device: "cuda"
-log_dir: "./logs"
+log_dir: "./logs/1"

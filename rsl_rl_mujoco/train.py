@@ -1,5 +1,6 @@
 import random
 import numpy as np
+from omegaconf import OmegaConf
 import torch
 import yaml
 import gymnasium as gym
@@ -8,16 +9,17 @@ from stable_baselines3.common.vec_env import SubprocVecEnv
 from stable_baselines3.common.env_util import make_vec_env
 from rsl_rl_mujoco.env_wrapper import SB3RslVecEnv
 from pathlib import Path
-import hydra
-from omegaconf import DictConfig
+from hydra import main
+
 gym.register(
     id='MFG_MS_V7',
     entry_point='Env.MFG_Musculoskelet_V7.mfgenv.mfg_env:MFG_Musculoskelet_V7',
     max_episode_steps=800
 )
-@hydra.main(config_path="configs", config_name="default")
-def main(cfg: DictConfig):
-    import ipdb;ipdb.set_trace()
+@main(version_base=None, config_path="configs", config_name="default")
+def main(cfg):
+    cfg_yaml = OmegaConf.to_yaml(cfg)
+    cfg = yaml.safe_load(cfg_yaml)
     # Create environment
     env_id = cfg["env"]["id"]
     num_envs = cfg["env"].get("num_envs", 4)
@@ -31,7 +33,7 @@ def main(cfg: DictConfig):
         device=cfg.get("device", "cpu"),
     )
 
-    # Initialize runner
+    
     runner = OnPolicyRunner(
         env,
         cfg["train"],
