@@ -5,11 +5,10 @@ hydra:
 env:
   id: "MFG_MS_V7"
   num_envs: 64
-  is_finite_horizon: true
 
 train:
   num_steps_per_env: 256 
-  num_learning_iterations: 5000 
+  num_learning_iterations: 4000 
   empirical_normalization: true
 
   save_interval: 100  
@@ -59,4 +58,4 @@ train:
     # rnn_num_layers: 1
 seed: 0
 device: "cuda"
-log_dir: "./logs/1"
+log_dir: "./logs"

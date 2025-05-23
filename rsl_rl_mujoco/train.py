@@ -20,11 +20,12 @@ gym.register(
 def main(cfg):
     cfg_yaml = OmegaConf.to_yaml(cfg)
     cfg = yaml.safe_load(cfg_yaml)
+    import ipdb;ipdb.set_trace()
     # Create environment
     env_id = cfg["env"]["id"]
     num_envs = cfg["env"].get("num_envs", 4)
     # import ipdb;ipdb.set_trace()
-    envs = make_vec_env('MFG_MS_V7', n_envs=num_envs,vec_env_cls=SubprocVecEnv)
+    envs = make_vec_env(env_id, n_envs=num_envs,vec_env_cls=SubprocVecEnv)
     
     # envs = [gym.make(env_id) for _ in range(num_envs)]
     env = SB3RslVecEnv(
