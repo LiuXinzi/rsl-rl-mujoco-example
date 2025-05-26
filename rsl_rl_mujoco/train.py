@@ -12,8 +12,8 @@ from pathlib import Path
 from hydra import main
 
 gym.register(
-    id='MFG_MS_V7',
-    entry_point='Env.MFG_Musculoskelet_V7.mfgenv.mfg_env:MFG_Musculoskelet_V7',
+    id='MFG_MS_V8',
+    entry_point='Env.MFG_Musculoskelet_V8.mfgenv.mfg_env:MFG_Musculoskelet_V8',
     max_episode_steps=800
 )
 @main(version_base=None, config_path="configs", config_name="default")

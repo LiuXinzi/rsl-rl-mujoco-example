@@ -12,7 +12,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 # Configure module-level logger
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 if not logger.handlers:
     # Add a default StreamHandler if no handler exists.
     ch = logging.StreamHandler()

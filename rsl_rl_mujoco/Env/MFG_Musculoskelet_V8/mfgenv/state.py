@@ -6,13 +6,12 @@ Handles state extraction, normalization, and statistics collection.
 
 import numpy as np
 import mujoco
-from mfgenv.common_utils import inverse_convert_ref_traj_qpos, inverse_convert_ref_traj_qvel
+from .common_utils import inverse_convert_ref_traj_qpos, inverse_convert_ref_traj_qvel
 import logging
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 # Configure module-level logger
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 if not logger.handlers:
     ch = logging.StreamHandler()
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')

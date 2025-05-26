@@ -5,14 +5,13 @@ from typing import Any, Dict, Optional, Union
 
 # Configure logging for the module
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
 if not logger.handlers:
     # Add a default StreamHandler if no handler exists.
     ch = logging.StreamHandler()
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     ch.setFormatter(formatter)
     logger.addHandler(ch)
-    
+
 # Default path for the configuration file
 DEFAULT_CONFIG_PATH: Path = Path(__file__).parent / "config.json"
 
@@ -70,13 +69,13 @@ def load_config(config_path: Optional[Union[str, Path]] = None, overrides: Dict[
 
     # Define default configuration parameters
     default_config: Dict[str, Any] = {
-        "model_path": "MFG_Raj2015_V8.xml",
-        "data_path": "MFG_mocap/SUBJECT01_steps.pkl",
+        "model_path": "Env/MFG_Musculoskelet_V8/MFG_Raj2015_V8.xml",
+        "data_path": "Env/MFG_mocap/SUBJECT01_steps.pkl",
         
         "reward_weights": {
-            'imitation': 0.99,
-            "smooth": 0.01,
-            'goal': 0.0,
+            'imitation': 1.00,
+            "smooth": 0.00,
+            'goal': 0.00,
         },
         "imitation_weights": {
             "site_pos": 0.79,
@@ -99,11 +98,11 @@ def load_config(config_path: Optional[Union[str, Path]] = None, overrides: Dict[
             "torque": 1e-6,
             "action": 2.0
         },
-        "ref_traj_repeat_times": 5,
+        "ref_traj_repeat_times": 20,
         "remove_x_pos": False,
         "short_history_max_len": 2,
         "long_history_max_len": 2,
-        
+
         "random_seed": None,
         "verbose": False
     }

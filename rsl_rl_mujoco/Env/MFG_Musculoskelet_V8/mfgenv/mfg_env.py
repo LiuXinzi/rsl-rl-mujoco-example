@@ -23,13 +23,14 @@ import numpy as np
 from collections import deque
 from typing import Optional, Dict, Any, List, Tuple, Union
 
-import mfgenv.config as cfg
-import mfgenv.common_utils as c_utils
-import mfgenv.mujoco_utils as mj_utils
-import mfgenv.state as s
-import mfgenv.termination as t
-import mfgenv.reward as r
-from mfgenv.ReferTraj_V6 import TrajectoryManager, ReferenceTrajectories as refs
+from . import config as cfg
+from . import mujoco_utils as mj_utils
+from . import common_utils as c_utils
+from . import state as s
+from . import termination as t
+from . import reward as r
+from .ReferTraj_V6 import TrajectoryManager, ReferenceTrajectories as refs
+
 
 _data_path = "MFG_mocap/SUBJECT01_steps.pkl"
 
@@ -64,7 +65,7 @@ class MFG_Musculoskelet_V8(gym.Env):
     """
     metadata = {
         "render_modes": ["human", "rgb_array"],
-        "render_fps": 20
+        "render_fps": 50
         }
 
     EPSILON = 1e-6
@@ -352,7 +353,6 @@ class MFG_Musculoskelet_V8(gym.Env):
             If any error occurs during action application or simulation.
         """
         try:
-            import time; t0=time.perf_counter()
             if action is None or action.shape != (self.num_actuators,):
                 raise ValueError(f" Invalid action shape: expected ({self.num_actuators},), got {action.shape}")
             
@@ -375,7 +375,7 @@ class MFG_Musculoskelet_V8(gym.Env):
             self.ref_traj.next()
             obs = self.get_obs()
             reward, reward_details = r.compute_reward(self)
-            terminated, terminated_details = t.check_termination(self, conditions=["has_fallen", "comY_deviated"])
+            terminated, terminated_details = t.check_termination(self, conditions=["has_fallen", "comY_deviated", "site_deviation_exceeded"])
             truncated = self.ref_traj.has_reached_end
             act_obs = np.concatenate([action, obs])
             self.update_history_buffer(act_obs)
@@ -389,7 +389,6 @@ class MFG_Musculoskelet_V8(gym.Env):
             
             if self.verbose:
                 logger.info("Step completed successfully.")
-            print(time.perf_counter()-t0)
             return obs, reward, terminated, truncated, info
         
         except Exception as e:

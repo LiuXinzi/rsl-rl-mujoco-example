@@ -16,7 +16,6 @@ import quaternion
 
 # Module-level logger configuration.
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
 if not logger.handlers:
     handler = logging.StreamHandler()
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -1114,3 +1113,4 @@ def get_ref_ee_pos(ref_qpos: np.ndarray, ee: str = 'rightfoot') -> np.ndarray:
         raise ValueError(f"Invalid end-effector position shape: expected (3,), got {ee_pos_in_ground.shape}.")
     
     return ee_pos_in_ground
+

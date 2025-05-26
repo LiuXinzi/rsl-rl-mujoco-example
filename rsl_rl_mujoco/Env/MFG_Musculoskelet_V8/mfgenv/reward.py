@@ -5,14 +5,13 @@ Provides imitation reward components and (currently stubbed) goal reward.
 """
 
 import numpy as np
-from mfgenv.common_utils import compute_site_kinematics, inverse_convert_ref_traj_qpos, inverse_convert_ref_traj_qvel, get_penalty
-from mfgenv.state import get_joint_kinematics, get_COM_kinematics, get_GRF_info
+from .common_utils import compute_site_kinematics, inverse_convert_ref_traj_qpos, inverse_convert_ref_traj_qvel, get_penalty
+from .state import get_joint_kinematics, get_COM_kinematics, get_GRF_info
 import logging
 from typing import Any, Tuple, Dict, Optional
 
 # Configure module-level logger
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 if not logger.handlers:
     ch = logging.StreamHandler()
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -118,7 +117,7 @@ def get_imitation_reward(env: Any) -> Tuple[float, Dict[str, float]]:
             "joint_angle": joint_angle_reward,
             "joint_angvel": joint_angvel_reward
             }
-        
+    
         return total_reward, breakdown
 
     except Exception as e:
@@ -425,9 +424,9 @@ def get_joint_tracking_reward(env: Any,
         if jnt_angvel_reward < env.EPSILON:
             jnt_angvel_reward = 0.0
             
-    breakdown = {"joint_angle": jnt_ang_reward, "joint_angvel": jnt_angvel_reward,
+        breakdown = {"joint_angle": jnt_ang_reward, "joint_angvel": jnt_angvel_reward,
                  "ang_mse": ang_mse, "angvel_mse": angvel_mse}
-    
+        
     return jnt_ang_reward, jnt_angvel_reward, breakdown
 
 def get_com_speed_reward(env: Any, k_com: float = 0.5) -> Tuple[float, Dict[str, float]]:
@@ -476,12 +475,12 @@ def get_com_speed_reward(env: Any, k_com: float = 0.5) -> Tuple[float, Dict[str,
         "com_speed_reward": com_speed_reward,
         "speed_err": speed_error
     }
-    
+
     return com_speed_reward, breakdown
 
 def get_grf_reward(env: Any, 
                    mode: str = "full", 
-                   k_grf: float = 0.1,
+                   k_grf: float = 1.0,
                    sigma: float = 0.1) -> Tuple[float, Dict[str, float]]:
     """
     Compute the GRF-based smooth reward by penalizing excessive ground reaction forces.
@@ -543,7 +542,7 @@ def get_grf_reward(env: Any,
     except Exception as e:
        logger.error("Failed to compute GRF reward: %s", e)
        return 0.0, {"grf_reward": 0.0, "total_grf_norm": 0.0}
-
+    
 def get_torque_reward(env: Any, k_torque: float = 1e-6) -> Tuple[float, Dict[str, float]]:
     """
     Compute the torque reward by penalizing excessive joint actuator forces.
@@ -571,14 +570,14 @@ def get_torque_reward(env: Any, k_torque: float = 1e-6) -> Tuple[float, Dict[str
             tor_reward = 0.0
         
         breakdown = {"tor_reward": tor_reward}
-        
+
         return tor_reward, breakdown
     
     except Exception as e:
         logger.error(f"Failed to compute torque reward: {e}")
         return 0.0, {}
 
-def get_action_reward(env: Any, k_action: float = 2.0) -> Tuple[float, Dict[str, float]]:
+def get_action_reward(env: Any, k_action: float = 1.0) -> Tuple[float, Dict[str, float]]:
     """
     Compute the action smoothness reward based on the difference between the current and previous RL actions.
     
@@ -616,7 +615,7 @@ def get_action_reward(env: Any, k_action: float = 2.0) -> Tuple[float, Dict[str,
                 act_reward = 0.0
         
         breakdown = {"act_reward": act_reward}
-        
+
         return act_reward, breakdown
     
     except Exception as e:

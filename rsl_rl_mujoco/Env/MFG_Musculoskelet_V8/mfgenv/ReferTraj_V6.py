@@ -32,13 +32,13 @@ class TrajectoryManager:
     def __init__(
         self,
         data_path: Union[str, Path],
-        repeat_times: int = 10,
+        repeat_times: int = 20,
         sample_frequency: int = 100,
         knee_1dof: bool = True,
         enable_mirroring: bool = True,
         smoothing_sigma: Optional[float] = None,
         splice_overlap: int = 10,
-        speed_range: Tuple[float, float] = (0.0, 3.0),
+        speed_range: Tuple[float, float] = (1.2, 1.3),
         uniform_length: bool = False,
         verbose: bool = False,
     ) -> None:
