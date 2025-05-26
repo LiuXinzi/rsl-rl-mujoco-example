@@ -10,12 +10,12 @@ import logging
 from functools import partial
 from typing import Any, Tuple, Dict, List
 
-from mfgenv.state import get_GRF_info, get_joint_kinematics
-from mfgenv.common_utils import inverse_convert_ref_traj_qpos, compute_site_kinematics
+from .state import get_GRF_info, get_joint_kinematics
+from .common_utils import inverse_convert_ref_traj_qpos, compute_site_kinematics
 
 # Configure module-level logger
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+
 if not logger.handlers:
     ch = logging.StreamHandler()
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -270,6 +270,6 @@ def is_site_deviation_exceeded(env: Any, threshold: float = 0.15, relative_to_pe
     if not exceeded_sites:
         return False, {}
     return True, exceeded_sites
-    
+        
         
         

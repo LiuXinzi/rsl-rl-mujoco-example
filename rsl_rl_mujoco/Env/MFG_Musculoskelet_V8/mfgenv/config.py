@@ -65,7 +65,8 @@ def load_config(config_path: Optional[Union[str, Path]] = None, overrides: Dict[
             logger.error("Error decoding JSON from config file %s: %s", file_path, e)
             raise e
     else:
-        logger.warning("Config file %s not found. Using default values.", file_path)
+        # logger.warning("Config file %s not found. Using default values.", file_path)
+        pass
 
     # Define default configuration parameters
     default_config: Dict[str, Any] = {

@@ -3,7 +3,7 @@ hydra:
     dir: .
   output_subdir: null
 env:
-  id: "MFG_MS_V7"
+  id: "MFG_MS_V8"
   num_envs: 64
 
 train:
