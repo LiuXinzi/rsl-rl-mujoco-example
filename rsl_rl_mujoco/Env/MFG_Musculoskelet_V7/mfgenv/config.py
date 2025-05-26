@@ -65,7 +65,8 @@ def load_config(config_path: Optional[Union[str, Path]] = None, overrides: Dict[
             logger.error("Error decoding JSON from config file %s: %s", file_path, e)
             raise e
     else:
-        logger.warning("Config file %s not found. Using default values.", file_path)
+        # logger.warning("Config file %s not found. Using default values.", file_path)
+        pass
 
     # original
     default_config: Dict[str, Any] = {
@@ -98,7 +99,7 @@ def load_config(config_path: Optional[Union[str, Path]] = None, overrides: Dict[
             "torque": 1e-6,
             "action": 2.0
         },
-        "ref_traj_repeat_times": 5,
+        "ref_traj_repeat_times": 20,
         "remove_x_pos": False,
         "short_history_max_len": 2,
         "long_history_max_len": 2,

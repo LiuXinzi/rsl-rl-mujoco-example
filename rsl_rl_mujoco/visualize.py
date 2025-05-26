@@ -83,7 +83,10 @@ class PolicyVisualizer:
         ).to(self.device)
         
         # Load checkpoint
-        checkpoint = torch.load(self.cfg["policy"]["checkpoint"])
+        if torch.cuda.is_available():
+            checkpoint = torch.load(self.cfg["policy"]["checkpoint"])
+        else:
+            checkpoint = torch.load(self.cfg["policy"]["checkpoint"],map_location=torch.device('cpu'))
         # import ipdb;ipdb.set_trace()
         self.obs_normalizer.load_state_dict(checkpoint["obs_norm_state_dict"])
         self.obs_normalizer.eval()

@@ -102,7 +102,6 @@ class OnPolicyRunner:
         self.save_interval = self.cfg["save_interval"]
         self.empirical_normalization = self.cfg["empirical_normalization"]
         if self.empirical_normalization:
-            print("Normalization")
             self.obs_normalizer = EmpiricalNormalization(shape=[num_obs], until=1.0e8).to(self.device)
             self.privileged_obs_normalizer = EmpiricalNormalization(shape=[num_privileged_obs], until=1.0e8).to(
                 self.device
