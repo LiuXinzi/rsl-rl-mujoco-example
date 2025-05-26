@@ -62,7 +62,7 @@ python train.py \
     "train.policy.actor_hidden_dims=[512, 256, 256]" \
     "train.policy.critic_hidden_dims=[512, 256, 256]" \
     train.policy.init_noise_std=0.1 \
-    "log_dir= ./logs/6" \
+    "log_dir= ./logs/7" \
 
 python train.py \
     train.algorithm.value_loss_coef=0.5 \
@@ -71,7 +71,7 @@ python train.py \
     "train.policy.actor_hidden_dims=[512, 512, 512, 256]" \
     "train.policy.critic_hidden_dims=[512, 512, 512, 256]" \
     train.policy.init_noise_std=0.1 \
-    "log_dir= ./logs/6" \
+    "log_dir= ./logs/8" \
 
 python train.py \
     train.algorithm.value_loss_coef=0.5 \
@@ -80,4 +80,4 @@ python train.py \
     "train.policy.actor_hidden_dims=[512, 256, 256, 256]" \
     "train.policy.critic_hidden_dims=[512, 256, 256, 256]" \
     train.policy.init_noise_std=0.1 \
-    "log_dir= ./logs/6" \
+    "log_dir= ./logs/9" \

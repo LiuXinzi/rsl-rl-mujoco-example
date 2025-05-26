@@ -20,7 +20,7 @@ gym.register(
 def main(cfg):
     cfg_yaml = OmegaConf.to_yaml(cfg)
     cfg = yaml.safe_load(cfg_yaml)
-    import ipdb;ipdb.set_trace()
+    # import ipdb;ipdb.set_trace()
     # Create environment
     env_id = cfg["env"]["id"]
     num_envs = cfg["env"].get("num_envs", 4)
