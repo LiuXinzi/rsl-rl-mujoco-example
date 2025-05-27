@@ -6,43 +6,43 @@ python train.py \
     "train.policy.actor_hidden_dims=[512, 512, 256]" \
     "train.policy.critic_hidden_dims=[512, 512, 256]" \
     train.policy.init_noise_std=0.1 \
-    "log_dir= ./logs/try_reset_new_1" \
+    "log_dir= ./logs/0_1" \
 
-python train.py \
-    train.algorithm.value_loss_coef=0.5 \
-    train.algorithm.gamma=0.99 \
-    train.algorithm.learning_rate=0.0001 \
-    "train.policy.actor_hidden_dims=[512, 512, 512, 256]" \
-    "train.policy.critic_hidden_dims=[512, 512, 512, 256]" \
-    train.policy.init_noise_std=0.1 \
-    "log_dir= ./logs/try_reset_new_2" \
+# python train.py \
+#     train.algorithm.value_loss_coef=0.5 \
+#     train.algorithm.gamma=0.99 \
+#     train.algorithm.learning_rate=0.0001 \
+#     "train.policy.actor_hidden_dims=[512, 512, 512, 256]" \
+#     "train.policy.critic_hidden_dims=[512, 512, 512, 256]" \
+#     train.policy.init_noise_std=0.1 \
+#     "log_dir= ./logs/try_reset_new_2" \
 
-python train.py \
-    train.algorithm.value_loss_coef=0.5 \
-    train.algorithm.gamma=0.99 \
-    train.algorithm.learning_rate=0.0001 \
-    "train.policy.actor_hidden_dims=[512, 512, 512, 512, 256]" \
-    "train.policy.critic_hidden_dims=[512, 512, 512, 512, 256]" \
-    train.policy.init_noise_std=0.1 \
-    "log_dir= ./logs/try_reset_new_3" \
+# python train.py \
+#     train.algorithm.value_loss_coef=0.5 \
+#     train.algorithm.gamma=0.99 \
+#     train.algorithm.learning_rate=0.0001 \
+#     "train.policy.actor_hidden_dims=[512, 512, 512, 512, 256]" \
+#     "train.policy.critic_hidden_dims=[512, 512, 512, 512, 256]" \
+#     train.policy.init_noise_std=0.1 \
+#     "log_dir= ./logs/try_reset_new_3" \
 
-python train.py \
-    train.algorithm.value_loss_coef=0.5 \
-    train.algorithm.gamma=0.99 \
-    train.algorithm.learning_rate=0.0001 \
-    "train.policy.actor_hidden_dims=[1024, 512, 256]" \
-    "train.policy.critic_hidden_dims=[1024, 512, 256]" \
-    train.policy.init_noise_std=0.1 \
-    "log_dir= ./logs/try_reset_new_4" \
+# python train.py \
+#     train.algorithm.value_loss_coef=0.5 \
+#     train.algorithm.gamma=0.99 \
+#     train.algorithm.learning_rate=0.0001 \
+#     "train.policy.actor_hidden_dims=[1024, 512, 256]" \
+#     "train.policy.critic_hidden_dims=[1024, 512, 256]" \
+#     train.policy.init_noise_std=0.1 \
+#     "log_dir= ./logs/try_reset_new_4" \
 
-python train.py \
-    train.algorithm.value_loss_coef=0.5 \
-    train.algorithm.gamma=0.99 \
-    train.algorithm.learning_rate=0.0001 \
-    "train.policy.actor_hidden_dims=[512, 256]" \
-    "train.policy.critic_hidden_dims=[512, 256]" \
-    train.policy.init_noise_std=0.1 \
-    "log_dir= ./logs/try_reset_new_5" \
+# python train.py \
+#     train.algorithm.value_loss_coef=0.5 \
+#     train.algorithm.gamma=0.99 \
+#     train.algorithm.learning_rate=0.0001 \
+#     "train.policy.actor_hidden_dims=[512, 256]" \
+#     "train.policy.critic_hidden_dims=[512, 256]" \
+#     train.policy.init_noise_std=0.1 \
+#     "log_dir= ./logs/try_reset_new_5" \
 # python train.py \
 #     train.algorithm.value_loss_coef=0.7 \
 #     train.algorithm.gamma=0.99 \
