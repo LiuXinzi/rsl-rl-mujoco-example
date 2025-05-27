@@ -16,7 +16,11 @@ gym.register(
     entry_point='Env.MFG_Musculoskelet_V7.mfgenv.mfg_env:MFG_Musculoskelet_V7',
     max_episode_steps=1000
 )
-
+gym.register(
+    id='MFG_MS_V8',
+    entry_point='Env.MFG_Musculoskelet_V8.mfgenv.mfg_env:MFG_Musculoskelet_V8',
+    max_episode_steps=1000
+)
 class PolicyVisualizer:
     def __init__(self, cfg_path):
         self.load_config(cfg_path)
