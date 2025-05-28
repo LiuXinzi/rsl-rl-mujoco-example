@@ -38,13 +38,12 @@ class TrajectoryManager:
         enable_mirroring: bool = True,
         smoothing_sigma: Optional[float] = None,
         splice_overlap: int = 10,
-        speed_range: Tuple[float, float] = (0, 3),
+        speed_range: Tuple[float, float] = (0, 1),
         uniform_length: bool = False,
         verbose: bool = False,
     ) -> None:
         """
         Initialize and preprocess all gait trajectories.
-
         Parameters
         ----------
         data_path : Union[str, Path]

@@ -66,7 +66,7 @@ class GymMujocoWrapper(VecEnv):
 
         obs_list, rewards, dones = [], [], []
         for i, env in enumerate(self.envs):
-            obs, rew, terminated, truncated, _ = env.step(actions_np[i])
+            obs, rew, terminated, truncated, info = env.step(actions_np[i])
             done = terminated or truncated
             if done:
                 obs, _ = env.reset()
@@ -79,11 +79,8 @@ class GymMujocoWrapper(VecEnv):
         rewards_tensor = torch.tensor(rewards, dtype=torch.float, device=self.device)
         dones_tensor = torch.tensor(dones, dtype=torch.long, device=self.device)
 
-        extras = {"observations": {"policy": obs_tensor}}
-        if not self.cfg.is_finite_horizon:
-            extras["time_outs"] = torch.zeros_like(dones_tensor)
 
-        return obs_tensor, rewards_tensor, dones_tensor, extras
+        return obs_tensor, rewards_tensor, dones_tensor, info
 
     def close(self):
         for env in self.envs:
@@ -93,7 +90,9 @@ class GymMujocoWrapper(VecEnv):
         for env in self.envs:
             env.reset(seed=seed)
         return seed
-
+    def speed(self):
+        import ipdb;ipdb.set_trace()
+        return self.envs[0].ref_traj.speed()
     def _modify_action_space(self):
         if self.clip_actions is None:
             return

@@ -19,7 +19,7 @@ gym.register(
 gym.register(
     id='MFG_MS_V8',
     entry_point='Env.MFG_Musculoskelet_V8.mfgenv.mfg_env:MFG_Musculoskelet_V8',
-    max_episode_steps=1000
+    max_episode_steps=400
 )
 class PolicyVisualizer:
     def __init__(self, cfg_path):
@@ -112,14 +112,14 @@ class PolicyVisualizer:
                 with torch.no_grad():
                     actions = self.policy.act_inference(obs)
                 
-                obs, reward, done, _ = self.env.step(actions)
+                obs, reward, done, info = self.env.step(actions)
                 obs=self.obs_normalizer(obs)
                 episode_reward += reward.item()
                 
                 # Control playback speed
                 time.sleep(1.0 / (self.env.max_episode_length * self.cfg["visualization"]["speedup"]))
-            
-            
+            print(self.env.speed())
+            print(info["terminated_info"])
             print(f"Episode {episode + 1}: Reward = {episode_reward:.1f}")
         
         self.env.close()
