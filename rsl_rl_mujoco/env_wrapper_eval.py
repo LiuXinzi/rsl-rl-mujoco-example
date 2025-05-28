@@ -36,7 +36,6 @@ class GymMujocoWrapper(VecEnv):
         self.episode_length_buf = torch.zeros(
             self.num_envs, dtype=torch.long, device=self.device
         )
-
         self._obs = None
         self._modify_action_space()
         self.reset()
@@ -91,8 +90,8 @@ class GymMujocoWrapper(VecEnv):
             env.reset(seed=seed)
         return seed
     def speed(self):
-        import ipdb;ipdb.set_trace()
-        return self.envs[0].ref_traj.speed()
+        # import ipdb;ipdb.set_trace()
+        return self.envs[0].unwrapped.ref_traj.speed
     def _modify_action_space(self):
         if self.clip_actions is None:
             return

@@ -38,7 +38,7 @@ class TrajectoryManager:
         enable_mirroring: bool = True,
         smoothing_sigma: Optional[float] = None,
         splice_overlap: int = 10,
-        speed_range: Tuple[float, float] = (0, 1),
+        speed_range: Tuple[float, float] = (0, 3),
         uniform_length: bool = False,
         verbose: bool = False,
     ) -> None:
