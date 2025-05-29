@@ -86,7 +86,15 @@ class TrajectoryManager:
         self.rng = np.random.default_rng()
         
         # Load and validate raw segments
-        raw_segments = self._load_raw_data()
+        raw_segments: List[np.ndarray] = []
+        if self.data_path.is_dir():
+            pkl_files = sorted(self.data_path.glob("*.pkl"))
+            if not pkl_files:
+                raise FileNotFoundError(f"No .pkl files found in directory {self.data_path}")
+            for pkl in pkl_files:
+                raw_segments.extend(self._load_raw_data(pkl))
+        else:
+            raw_segments = self._load_raw_data(self.data_path)
         self._validate_data(raw_segments)
         
         # Preprocess: remove extra knee DOFs, mirror
@@ -237,9 +245,14 @@ class TrajectoryManager:
         """
         return list(self.speeds_list)
 
-    def _load_raw_data(self) -> List[np.ndarray]:
+    def _load_raw_data(self, pkl_path: Union[str, Path]) -> List[np.ndarray]:
         """
         Load raw trajectory segments from a pickle file.
+    
+        Parameters
+        ----------
+        pkl_path : Union[str, Path]
+            Path to the pickle file containing the list of gait segments.
     
         Returns
         -------
@@ -249,11 +262,11 @@ class TrajectoryManager:
         Raises
         ------
         FileNotFoundError
-            If the data file does not exist.
+            If the specified file does not exist.
         IOError
             If the file cannot be read or unpickled.
         """
-        path = Path(self.data_path)
+        path = Path(pkl_path)
         if not path.is_file():
             raise FileNotFoundError(f"Data file not found: {path}")
         try:

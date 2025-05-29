@@ -32,7 +32,7 @@ from . import reward as r
 from .ReferTraj_V6 import TrajectoryManager, ReferenceTrajectories as refs
 
 
-_data_path = "Env/MFG_mocap/SUBJECT01_steps.pkl"
+_data_path = "Env/MFG_mocap"
 
 _global_manager = TrajectoryManager(data_path=_data_path)
 
