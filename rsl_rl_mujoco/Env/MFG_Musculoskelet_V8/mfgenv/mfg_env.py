@@ -375,7 +375,7 @@ class MFG_Musculoskelet_V8(gym.Env):
             self.ref_traj.next()
             obs = self.get_obs()
             reward, reward_details = r.compute_reward(self)
-            terminated, terminated_details = t.check_termination(self, conditions=["has_fallen", "comY_deviated", "site_deviation_exceeded"])
+            terminated, terminated_details = t.check_termination(self, conditions=["has_fallen", "site_deviation_exceeded"])
             truncated = self.ref_traj.has_reached_end
             act_obs = np.concatenate([action, obs])
             self.update_history_buffer(act_obs)
