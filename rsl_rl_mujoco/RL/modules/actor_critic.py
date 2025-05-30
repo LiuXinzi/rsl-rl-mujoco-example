@@ -69,6 +69,7 @@ class ActorCritic(nn.Module):
         self.noise_std_type = noise_std_type
         if self.noise_std_type == "scalar":
             self.std = nn.Parameter(init_noise_std * torch.ones(num_actions))
+            self.std.requires_grad_(False)
         elif self.noise_std_type == "log":
             self.log_std = nn.Parameter(torch.log(init_noise_std * torch.ones(num_actions)))
         else:
