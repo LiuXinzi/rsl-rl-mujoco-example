@@ -8,7 +8,7 @@ env:
 
 train:
   num_steps_per_env: 256 
-  num_learning_iterations: 5000 
+  num_learning_iterations: 10000 
   empirical_normalization: true
 
   save_interval: 100  

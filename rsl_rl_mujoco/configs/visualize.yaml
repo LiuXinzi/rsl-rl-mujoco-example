@@ -6,12 +6,12 @@ env:
   height: 720          # Render window height
 
 policy:
-  checkpoint: "model/multi-400/model_5999.pt"  # Path to trained policy
+  checkpoint: "model/0_3_200/model_9999.pt"  # Path to trained policy
   activation: "elu"
   hidden_dims: [512, 512, 256]
 
 visualization:
-  num_episodes: 100     # Number of episodes to run
+  num_episodes: 5000     # Number of episodes to run
   speedup: 1         # Simulation speed multiplier (1.0 = real-time)
-  record_video: False  # Save video to files
+  wandb: True  # Save video to files
   video_dir: "videos"  # Where to save recordings

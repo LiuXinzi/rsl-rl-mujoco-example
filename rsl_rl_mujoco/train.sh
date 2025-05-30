@@ -6,7 +6,7 @@ python train.py \
     "train.policy.actor_hidden_dims=[512, 512, 256]" \
     "train.policy.critic_hidden_dims=[512, 512, 256]" \
     train.policy.init_noise_std=0.1 \
-    "log_dir= ./logs/0_0.26" \
+    "log_dir= ./logs/0_3_200" \
 
 # python train.py \
 #     train.algorithm.value_loss_coef=0.5 \
