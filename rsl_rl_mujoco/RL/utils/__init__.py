@@ -11,4 +11,8 @@ from .utils import (
     store_code_state,
     string_to_callable,
     unpad_trajectories,
+    export_policy_as_onnx,
+    AMPNormalizer,
+    RunningMeanStd,
+    AMPLoader,
 )

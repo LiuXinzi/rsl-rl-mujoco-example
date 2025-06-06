@@ -19,4 +19,4 @@ stable-baselines3[extra]
 gym
 scipy
 numpy-quaternion
-hydra-core --upgrade
+hydra-core 
