@@ -6,9 +6,9 @@ env:
   height: 720          # Render window height
 
 policy:
-  checkpoint: "model/0_3_200/model_9999.pt"  # Path to trained policy
+  checkpoint: "model/0.3_3_4mlp/model_7999.pt"  # Path to trained policy
   activation: "elu"
-  hidden_dims: [512, 512, 256]
+  hidden_dims: [1024,512, 512, 256]
 
 visualization:
   num_episodes: 5000     # Number of episodes to run

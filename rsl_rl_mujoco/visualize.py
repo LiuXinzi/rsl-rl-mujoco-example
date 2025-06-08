@@ -106,7 +106,7 @@ class PolicyVisualizer:
                 # Control playback speed
                 time.sleep(1.0 / (self.env.max_episode_length * self.cfg["visualization"]["speedup"]))
             speed=self.env.speed()
-            finish=not info["terminated_info"]['has_fallen'] and not info["terminated_info"]['site_deviation_exceeded'] and not info["terminated_info"]['comY_deviated']
+            finish=not info["terminated_info"]['has_fallen'] and not info["terminated_info"]['site_deviation_exceeded'] 
             print(speed)
             print(info["terminated_info"])
 
