@@ -147,7 +147,7 @@ class PPO:
         self.schedule = schedule
         self.learning_rate = learning_rate
         self.normalize_advantage_per_mini_batch = normalize_advantage_per_mini_batch
-
+        self.use_smooth_ratio_clipping: bool = use_smooth_ratio_clipping
     def init_storage(
         self, 
         training_type, 
@@ -254,6 +254,14 @@ class PPO:
         mean_value_loss = 0
         mean_surrogate_loss = 0
         mean_entropy = 0
+        mean_amp_loss: float = 0.0
+        mean_grad_pen_loss: float = 0.0
+        mean_policy_pred: float = 0.0
+        mean_expert_pred: float = 0.0
+        mean_accuracy_policy: float = 0.0
+        mean_accuracy_expert: float = 0.0
+        mean_accuracy_policy_elem: float = 0.0
+        mean_accuracy_expert_elem: float = 0.0
         # -- RND loss
         if self.rnd:
             mean_rnd_loss = 0
@@ -270,7 +278,22 @@ class PPO:
             generator = self.storage.recurrent_mini_batch_generator(self.num_mini_batches, self.num_learning_epochs)
         else:
             generator = self.storage.mini_batch_generator(self.num_mini_batches, self.num_learning_epochs)
-
+        
+        amp_policy_generator = self.amp_storage.feed_forward_generator(
+            num_mini_batch=self.num_learning_epochs * self.num_mini_batches,
+            mini_batch_size=(
+                self.storage.num_envs * self.storage.num_transitions_per_env
+            )
+            // self.num_mini_batches,
+            allow_replacement=True,
+        )
+        amp_expert_generator = self.amp_data.feed_forward_generator(
+            self.num_learning_epochs * self.num_mini_batches,
+            (
+                self.storage.num_envs * self.storage.num_transitions_per_env
+            )
+            // self.num_mini_batches,
+        )
         # iterate over batches
         for (
             obs_batch,
@@ -285,7 +308,9 @@ class PPO:
             hid_states_batch,
             masks_batch,
             rnd_state_batch,
-        ) in generator:
+            ), sample_amp_policy, sample_amp_expert in zip(
+                generator, amp_policy_generator, amp_expert_generator
+            ):
 
             # number of augmentations per sample
             # we start with 1 and increase it if we use symmetry augmentation
@@ -370,11 +395,22 @@ class PPO:
                         param_group["lr"] = self.learning_rate
 
             # Surrogate loss
+            min_ = 1.0 - self.clip_param
+            max_ = 1.0 + self.clip_param
+
+            # Smooth clamping for the ratio if enabled.
+            if self.use_smooth_ratio_clipping:
+                clipped_ratio = (
+                    1
+                    / (1 + torch.exp((-(ratio - min_) / (max_ - min_) + 0.5) * 4))
+                    * (max_ - min_)
+                    + min_
+                )
+            else:
+                clipped_ratio = torch.clamp(ratio, min_, max_)
             ratio = torch.exp(actions_log_prob_batch - torch.squeeze(old_actions_log_prob_batch))
             surrogate = -torch.squeeze(advantages_batch) * ratio
-            surrogate_clipped = -torch.squeeze(advantages_batch) * torch.clamp(
-                ratio, 1.0 - self.clip_param, 1.0 + self.clip_param
-            )
+            surrogate_clipped = -torch.squeeze(advantages_batch) * clipped_ratio
             surrogate_loss = torch.max(surrogate, surrogate_clipped).mean()
 
             # Value function loss
@@ -388,8 +424,39 @@ class PPO:
             else:
                 value_loss = (returns_batch - value_batch).pow(2).mean()
 
-            loss = surrogate_loss + self.value_loss_coef * value_loss - self.entropy_coef * entropy_batch.mean()
+            ppo_loss = surrogate_loss + self.value_loss_coef * value_loss - self.entropy_coef * entropy_batch.mean()
+            
+            # Process AMP loss by unpacking policy and expert AMP samples.
+            policy_state, policy_next_state = sample_amp_policy
+            expert_state, expert_next_state = sample_amp_expert
 
+            # Normalize AMP observations if a normalizer is provided.
+            if self.amp_normalizer is not None:
+                with torch.no_grad():
+                    policy_state = self.amp_normalizer.normalize(policy_state)
+                    policy_next_state = self.amp_normalizer.normalize(policy_next_state)
+                    expert_state = self.amp_normalizer.normalize(expert_state)
+                    expert_next_state = self.amp_normalizer.normalize(expert_next_state)
+
+            # Pass concatenated state transitions to the discriminator.
+            policy_d = self.discriminator(
+                torch.cat([policy_state, policy_next_state], dim=-1)
+            )
+            expert_d = self.discriminator(
+                torch.cat([expert_state, expert_next_state], dim=-1)
+            )
+
+            # Compute discriminator losses for expert and policy data.
+            expert_loss = self.discriminator_expert_loss(expert_d)
+            policy_loss = self.discriminator_policy_loss(policy_d)
+
+            # AMP loss is the average of expert and policy losses.
+            amp_loss = 0.5 * (expert_loss + policy_loss)
+
+            # Compute gradient penalty to stabilize discriminator training.
+            grad_pen_loss = self.discriminator.compute_grad_pen(
+                *sample_amp_expert, lambda_=10
+            )
             # Symmetry loss
             if self.symmetry:
                 # obtain the symmetric actions
@@ -434,6 +501,7 @@ class PPO:
                 mseloss = torch.nn.MSELoss()
                 rnd_loss = mseloss(predicted_embedding, target_embedding)
 
+            loss = ppo_loss + (amp_loss + grad_pen_loss)
             # Compute the gradients
             # -- For PPO
             self.optimizer.zero_grad()
@@ -455,10 +523,31 @@ class PPO:
             if self.rnd_optimizer:
                 self.rnd_optimizer.step()
 
+            # Update the normalizer with current policy and expert AMP observations.
+            if self.amp_normalizer is not None:
+                self.amp_normalizer.update(policy_state)
+                self.amp_normalizer.update(expert_state)
+            # Compute probabilities from the discriminator logits.
+            policy_d_prob = torch.sigmoid(policy_d)
+            expert_d_prob = torch.sigmoid(expert_d)
             # Store the losses
             mean_value_loss += value_loss.item()
             mean_surrogate_loss += surrogate_loss.item()
             mean_entropy += entropy_batch.mean().item()
+            mean_amp_loss += amp_loss.item()
+            mean_grad_pen_loss += grad_pen_loss.item()
+            mean_policy_pred += policy_d_prob.mean().item()
+            mean_expert_pred += expert_d_prob.mean().item()
+            # Calculate the accuracy of the discriminator.
+            mean_accuracy_policy += torch.sum(
+                torch.round(policy_d_prob) == torch.zeros_like(policy_d_prob)
+            ).item()
+            mean_accuracy_expert += torch.sum(
+                torch.round(expert_d_prob) == torch.ones_like(expert_d_prob)
+            ).item()
+            # Record the total number of elements processed.
+            mean_accuracy_expert_elem += expert_d_prob.numel()
+            mean_accuracy_policy_elem += policy_d_prob.numel()
             # -- RND loss
             if mean_rnd_loss is not None:
                 mean_rnd_loss += rnd_loss.item()
@@ -478,6 +567,12 @@ class PPO:
         if mean_symmetry_loss is not None:
             mean_symmetry_loss /= num_updates
         # -- Clear the storage
+        mean_amp_loss /= num_updates
+        mean_grad_pen_loss /= num_updates
+        mean_policy_pred /= num_updates
+        mean_expert_pred /= num_updates
+        mean_accuracy_policy /= mean_accuracy_policy_elem
+        mean_accuracy_expert /= mean_accuracy_expert_elem
         self.storage.clear()
 
         # construct the loss dictionary
@@ -485,6 +580,8 @@ class PPO:
             "value_function": mean_value_loss,
             "surrogate": mean_surrogate_loss,
             "entropy": mean_entropy,
+            "amp": mean_amp_loss,
+
         }
         if self.rnd:
             loss_dict["rnd"] = mean_rnd_loss
