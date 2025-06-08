@@ -401,15 +401,32 @@ class OnPolicyRunner:
 
     def save(self, path: str, infos=None):
         # -- Save model
-        saved_dict = {
+        if self.useAmp:
+            saved_dict = {
             "model_state_dict": self.alg.policy.state_dict(),
             "optimizer_state_dict": self.alg.optimizer.state_dict(),
+            "discriminator_state_dict": self.alg.discriminator.state_dict(),
+            "amp_normalizer": self.alg.amp_normalizer,
             "iter": self.current_learning_iteration,
             "infos": infos,
-        }
+                }
+            if self.empirical_normalization:
+                saved_dict["obs_norm_state_dict"] = self.obs_normalizer.state_dict()
+                saved_dict["privileged_obs_norm_state_dict"] = self.privileged_obs_normalizer.state_dict()
+        else:
+            saved_dict = {
+                "model_state_dict": self.alg.policy.state_dict(),
+                "optimizer_state_dict": self.alg.optimizer.state_dict(),
+                "iter": self.current_learning_iteration,
+                "infos": infos,
+            }
+            # -- Save RND model if used
+
+            if self.empirical_normalization:
+                saved_dict["obs_norm_state_dict"] = self.obs_normalizer.state_dict()
+                saved_dict["privileged_obs_norm_state_dict"] = self.privileged_obs_normalizer.state_dict()
+
         torch.save(saved_dict, path)
-    def save_withAmp(self, path: str, infos=None):
-        pass
 
 
 
@@ -417,10 +434,10 @@ class OnPolicyRunner:
         loaded_dict = torch.load(path, weights_only=False)
         # -- Load model
         resumed_training = self.alg.policy.load_state_dict(loaded_dict["model_state_dict"])
-        # -- Load RND model if used
-        if self.alg.rnd:
-            self.alg.rnd.load_state_dict(loaded_dict["rnd_state_dict"])
-        # -- Load observation normalizer if used
+        if self.useAmp:
+            self.alg.discriminator.load_state_dict(loaded_dict["discriminator_state_dict"])
+            self.alg.amp_normalizer = loaded_dict["amp_normalizer"]
+       
         if self.empirical_normalization:
             if resumed_training:
                 # if a previous training is resumed, the actor/student normalizer is loaded for the actor/student
