@@ -30,10 +30,10 @@ class OnPolicyRunner:
         self.cfg = train_cfg
         self.alg_cfg = train_cfg["algorithm"]
         self.policy_cfg = train_cfg["policy"]
-        self.useAmp= "discriminator" in train_cfg
+        self.useAmp= train_cfg["discriminator"]["use"]
         self.device = device
         self.env = env
-
+        # import ipdb;ipdb.set_trace()
         # check if multi-gpu is enabled
         self._configure_multi_gpu()
 

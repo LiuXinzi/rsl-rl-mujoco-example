@@ -56,6 +56,16 @@ train:
     # rnn_type: 'lstm'
     # rnn_hidden_dim: 512
     # rnn_num_layers: 1
+  discriminator:
+    use: false
+    hidden_dims: [1024,512]
+    reward_scale: 1
+    amploader:
+      amp_data_path: None
+      dataset_names: None
+      dataset_weights: None
+      slow_down_factor: None
+
 seed: 0
 device: "cuda"
 log_dir: "./logs"
