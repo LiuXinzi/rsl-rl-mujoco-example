@@ -4,11 +4,11 @@ hydra:
   output_subdir: null
 env:
   id: "MFG_MS_V8"
-  num_envs: 2
+  num_envs: 64
 
 train:
   num_steps_per_env: 400 
-  num_learning_iterations: 200 
+  num_learning_iterations: 5000 
   empirical_normalization: true
 
   save_interval: 100  
@@ -47,8 +47,8 @@ train:
     class_name: ActorCritic
     # for MLP i.e. `ActorCritic`
     activation: elu
-    actor_hidden_dims: [1024,512,512,256]
-    critic_hidden_dims: [1024,512,512,256]
+    actor_hidden_dims: [1024, 512, 256]
+    critic_hidden_dims: [1024, 512, 256]
     init_noise_std: 0.1
     noise_std_type: "scalar"  # 'scalar' or 'log'
 
@@ -58,4 +58,4 @@ train:
     # rnn_num_layers: 1
 seed: 0
 device: "cuda"
-log_dir: "./logs/test_amp"
+log_dir: "./logs"
