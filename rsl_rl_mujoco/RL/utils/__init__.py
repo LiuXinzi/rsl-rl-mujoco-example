@@ -14,5 +14,5 @@ from .utils import (
     export_policy_as_onnx,
     AMPNormalizer,
     RunningMeanStd,
-    AMPLoader,
 )
+from .dataload import AMPLoader

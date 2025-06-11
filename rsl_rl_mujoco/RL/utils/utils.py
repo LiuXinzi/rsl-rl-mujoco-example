@@ -18,8 +18,6 @@ from typing import Callable
 from typing import Tuple, Union
 
 import torch
-def AMPLoader():
-    pass
 
 def resolve_nn_activation(act_name: str) -> torch.nn.Module:
     if act_name == "elu":
