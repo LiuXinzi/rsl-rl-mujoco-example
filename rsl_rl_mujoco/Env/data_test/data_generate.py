@@ -5,7 +5,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 def generate_npz_files(
     output_dir,
-    num_files: int = 5,
+    num_files: int = 1000,
     shape: tuple = (500, 276),
     key: str = "joint_position",
 ) -> None:
