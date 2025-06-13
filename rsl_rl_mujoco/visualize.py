@@ -2,6 +2,7 @@
 from collections import defaultdict
 import os
 import time
+import numpy as np
 import wandb
 import yaml
 import torch
@@ -89,9 +90,10 @@ class PolicyVisualizer:
         vel_dic={}
         if self.cfg['visualization']["wandb"]:
             wandb.init(project="Test_Env")
-        
+        path="Env/data_test"
         for episode in range(self.cfg["visualization"]["num_episodes"]):
             obs, _ = self.env.reset()
+            data=[obs]
             obs=self.obs_normalizer(obs)
             episode_reward = 0
             done = False
@@ -100,6 +102,7 @@ class PolicyVisualizer:
                     actions = self.policy.act_inference(obs)
                 
                 obs, reward, done, info = self.env.step(actions)
+                data.append(obs)
                 obs=self.obs_normalizer(obs)
                 episode_reward += reward.item()
                 
@@ -116,7 +119,9 @@ class PolicyVisualizer:
             if finish:
                 vel_dic[speed][1]+=1.
             print(f"Episode {episode + 1}: Reward = {episode_reward:.1f}")
-
+            data=np.array(data).astype(np.float32)
+            file_path = path / f"data_{i:02d}.npz"
+            np.savez_compressed(file_path, **{"joint_position": data})
             if self.cfg['visualization']["wandb"]:
                 bin_width = 0.1  # 你可以改成 1.0, 0.2 等
                 max_speed = 3.0
