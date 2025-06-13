@@ -207,9 +207,8 @@ class OnPolicyRunner:
                         style_rewards = self.discriminator.predict_reward(
                             amp_obs, next_amp_obs, normalizer=self.amp_normalizer
                         )
-
-                        # Combine the task and style rewards (TODO this can be a hyperparameters)
-                        rewards = 0.5 * rewards + 0.5 * style_rewards
+                        if it>50:
+                            rewards = 0.9 * rewards + 0.1 * style_rewards
                         self.alg.process_amp_step(next_amp_obs)
                         amp_obs = torch.clone(next_amp_obs)
                     # process the step
@@ -327,11 +326,13 @@ class OnPolicyRunner:
 
         # -- Training
         if len(locs["rewbuffer"]) > 0:
-            if self.useAmp:
-                self.writer.add_scalar("Train/mean_style_eward", statistics.mean(locs["arewbuffer"]), locs["it"])
+            
             self.writer.add_scalar("Train/mean_episode_length", statistics.mean(locs["lenbuffer"]), locs["it"])
             self.writer.add_scalar("Train/mean_reward", statistics.mean(locs["rewbuffer"]), locs["it"])
-            self.writer.add_scalar("Train/mean_episode_length", statistics.mean(locs["lenbuffer"]), locs["it"])
+            self.writer.add_scalar("Train/mean_reward_per_step", statistics.mean(locs["rewbuffer"])/statistics.mean(locs["lenbuffer"]), locs["it"])
+            if self.useAmp:
+                self.writer.add_scalar("Train/mean_style_reward", statistics.mean(locs["arewbuffer"]), locs["it"])
+                self.writer.add_scalar("Train/mean_style_reward_per_step", statistics.mean(locs["arewbuffer"])/statistics.mean(locs["lenbuffer"]), locs["it"])
             if self.logger_type != "wandb":  # wandb does not support non-integer x-axis logging
                 self.writer.add_scalar("Train/mean_reward/time", statistics.mean(locs["rewbuffer"]), self.tot_time)
                 self.writer.add_scalar(

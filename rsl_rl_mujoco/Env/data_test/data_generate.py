@@ -8,7 +8,7 @@ def generate_npz_files(
     num_files: int = 1000,
     shape: tuple = (500, 276),
     key: str = "joint_position",
-    mode: str = "uniform",  # 或 "randint", "mixed", "noisy"
+    mode: str = "mixed",  # 或 "randint", "mixed", "noisy"
 ) -> None:
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -33,3 +33,6 @@ def generate_npz_files(
         file_path = output_dir / f"data_{i:02d}.npz"
         np.savez_compressed(file_path, **{key: data})
     print(f"已在 {output_dir.resolve()} 下生成 {num_files} 个 .npz 文件，模式：{mode}")
+
+output_dir="Env/data_test"
+generate_npz_files(output_dir=output_dir)
