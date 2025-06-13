@@ -96,64 +96,19 @@ class Discriminator(nn.Module):
         grad_pen = lambda_ * (grad.norm(2, dim=1) - 0).pow(2).mean()
         return grad_pen
 
-    # TODO: remove the complete function
-    def predict_reward_old(
-        self,
-        state: torch.Tensor,
-        next_state: torch.Tensor,
-        normalizer=None,
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-        """Old version of the reward prediction function (deprecated).
-
-        Args:
-            state (Tensor): Current state tensor.
-            next_state (Tensor): Next state tensor.
-            normalizer (Optional): Optional state normalizer.
-
-        Returns:
-            Tuple[Tensor, Tensor]: Computed reward and discriminator output.
-        """
-        with torch.no_grad():
-            if normalizer is not None:
-                state = normalizer.normalize(state)
-                next_state = normalizer.normalize(next_state)
-
-            d = self.forward(torch.cat([state, next_state], dim=-1))
-            reward = torch.clamp(1 - (1 / 4) * torch.square(d - 1), min=0)
-
-        return reward.squeeze(), d
-
     def predict_reward(
         self,
         state: torch.Tensor,
         next_state: torch.Tensor,
         normalizer=None,
     ) -> torch.Tensor:
-        """Predicts reward based on discriminator output using a log-style formulation.
 
-        Args:
-            state (Tensor): Current state tensor.
-            next_state (Tensor): Next state tensor.
-            normalizer (Optional): Optional state normalizer.
-
-        Returns:
-            Tensor: Computed adversarial reward.
-        """
         with torch.no_grad():
             if normalizer is not None:
                 state = normalizer.normalize(state)
                 next_state = normalizer.normalize(next_state)
 
-            discriminator_logit = self.forward(torch.cat([state, next_state], dim=-1))
-            prob = torch.sigmoid(discriminator_logit)
+            d = self.forward(torch.cat([state, next_state], dim=-1))
+            reward = self.reward_scale * torch.clamp(1 - (1/4) * torch.square(d - 1), min=0)
 
-            # Avoid log(0) by clamping the input to a minimum threshold
-            reward = -torch.log(
-                torch.maximum(
-                    1 - prob,
-                    torch.tensor(self.reward_clamp_epsilon, device=self.device),
-                )
-            )
-
-            reward = self.reward_scale * reward
             return reward.squeeze()
