@@ -47,8 +47,8 @@ train:
     class_name: ActorCritic
     # for MLP i.e. `ActorCritic`
     activation: elu
-    actor_hidden_dims: [1024, 512, 256]
-    critic_hidden_dims: [1024, 512, 256]
+    actor_hidden_dims: [1024,512,512,256]
+    critic_hidden_dims: [1024,512,512,256]
     init_noise_std: 0.1
     noise_std_type: "scalar"  # 'scalar' or 'log'
 
@@ -57,15 +57,14 @@ train:
     # rnn_hidden_dim: 512
     # rnn_num_layers: 1
   discriminator:
-    use: false
+    use: true
     hidden_dims: [1024,512]
     reward_scale: 1
     amploader:
-      amp_data_path: None
-      dataset_names: None
-      dataset_weights: None
-      slow_down_factor: None
+      amp_data_path: "Env/data_test"
+      dataset_names: null
+      dataset_weights: null
 
 seed: 0
 device: "cuda"
-log_dir: "./logs"
+log_dir: "./logs/test"

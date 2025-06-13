@@ -50,7 +50,8 @@ class SB3RslVecEnv(VecEnv):
 
     def get_observations(self):
         obs_tensor = torch.tensor(self._obs, dtype=torch.float32, device=self.device)
-        return obs_tensor, {"observations": {"policy": obs_tensor}}
+        # import ipdb;ipdb.set_trace()
+        return obs_tensor, {"observations": {"policy": obs_tensor,"amp": obs_tensor}}
 
     def reset(self):
         out = self.env.reset()
@@ -78,7 +79,7 @@ class SB3RslVecEnv(VecEnv):
         rewards_tensor = torch.tensor(reward_batch,    dtype=torch.float32, device=self.device)
         dones_tensor   = torch.tensor(done_batch,      dtype=torch.long,    device=self.device)
 
-        extras = {"observations": {"policy": obs_tensor}}
+        extras = {"observations": {"policy": obs_tensor,"amp": obs_tensor}}
         if not self.cfg.is_finite_horizon:
             truncated_flags = [
                 info.get("TimeLimit.truncated", False)

@@ -397,7 +397,7 @@ class PPO:
             # Surrogate loss
             min_ = 1.0 - self.clip_param
             max_ = 1.0 + self.clip_param
-
+            ratio = torch.exp(actions_log_prob_batch - torch.squeeze(old_actions_log_prob_batch))
             # Smooth clamping for the ratio if enabled.
             if self.use_smooth_ratio_clipping:
                 clipped_ratio = (
@@ -408,7 +408,7 @@ class PPO:
                 )
             else:
                 clipped_ratio = torch.clamp(ratio, min_, max_)
-            ratio = torch.exp(actions_log_prob_batch - torch.squeeze(old_actions_log_prob_batch))
+            
             surrogate = -torch.squeeze(advantages_batch) * ratio
             surrogate_clipped = -torch.squeeze(advantages_batch) * clipped_ratio
             surrogate_loss = torch.max(surrogate, surrogate_clipped).mean()
@@ -427,8 +427,8 @@ class PPO:
             ppo_loss = surrogate_loss + self.value_loss_coef * value_loss - self.entropy_coef * entropy_batch.mean()
             
             # Process AMP loss by unpacking policy and expert AMP samples.
-            policy_state, policy_next_state = sample_amp_policy
-            expert_state, expert_next_state = sample_amp_expert
+            policy_state, policy_next_state = sample_amp_expert
+            expert_state, expert_next_state = sample_amp_policy
 
             # Normalize AMP observations if a normalizer is provided.
             if self.amp_normalizer is not None:

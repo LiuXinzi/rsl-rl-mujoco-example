@@ -77,7 +77,13 @@ class OnPolicyRunner:
         if self.useAmp:
             self.discriminator_cfg = train_cfg["discriminator"]
             num_amp_obs = extras["observations"]["amp"].shape[1]
-            amp_data = AMPLoader()
+            # import ipdb;ipdb.set_trace()
+            amp_data = AMPLoader(
+                        self.device,
+                        train_cfg["discriminator"]["amploader"]["amp_data_path"],
+                        train_cfg["discriminator"]["amploader"]["dataset_names"],
+                        train_cfg["discriminator"]["amploader"]["dataset_weights"],
+                    )
             self.amp_normalizer = AMPNormalizer(num_amp_obs, device=self.device)
             self.discriminator = Discriminator(
                 num_amp_obs
@@ -86,25 +92,7 @@ class OnPolicyRunner:
                 self.discriminator_cfg["reward_scale"],
                 device=self.device,
             ).to(self.device)
-        # resolve dimension of rnd gated state
-        if "rnd_cfg" in self.alg_cfg and self.alg_cfg["rnd_cfg"] is not None:
-            # check if rnd gated state is present
-            rnd_state = extras["observations"].get("rnd_state")
-            if rnd_state is None:
-                raise ValueError("Observations for the key 'rnd_state' not found in infos['observations'].")
-            # get dimension of rnd gated state
-            num_rnd_state = rnd_state.shape[1]
-            # add rnd gated state to config
-            self.alg_cfg["rnd_cfg"]["num_states"] = num_rnd_state
-            # scale down the rnd weight with timestep (similar to how rewards are scaled down in legged_gym envs)
-            self.alg_cfg["rnd_cfg"]["weight"] *= env.unwrapped.step_dt
-
-        # if using symmetry then pass the environment config object
-        if "symmetry_cfg" in self.alg_cfg and self.alg_cfg["symmetry_cfg"] is not None:
-            # this is used by the symmetry function for handling different observation terms
-            self.alg_cfg["symmetry_cfg"]["_env"] = env
-
-        # initialize algorithm
+       
         alg_class = eval(self.alg_cfg.pop("class_name"))
         self.alg: PPO | Distillation = alg_class(
             policy=policy,
